@@ -75,7 +75,7 @@ function App() {
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
   const [showKnowledgeSubmenu, setShowKnowledgeSubmenu] = useState(false);
   const [currentKnowledgeSection, setCurrentKnowledgeSection] =
-    useState<KnowledgeSection>('documents');
+    useState<KnowledgeSection>('knowledge-center');
   const [selectedKnowledgeItem, setSelectedKnowledgeItem] = useState<
     string | null
   >(null);
@@ -156,6 +156,8 @@ function App() {
           <HistoryPage
             chatHistory={chatHistory}
             onChatSelect={handleChatSelect}
+            userProfile={userProfile}
+            onLogout={handleLogout}
           />
         );
       case 'knowledge':
@@ -166,10 +168,18 @@ function App() {
               setCurrentPage('knowledge-center');
               setCurrentKnowledgeSection('knowledge-center');
             }}
+            userProfile={userProfile}
+            onLogout={handleLogout}
           />
         );
       case 'knowledge-center':
-        return <KnowledgeCenterPage onItemSelect={handleKnowledgeItemSelect} />;
+        return (
+          <KnowledgeCenterPage 
+            onItemSelect={handleKnowledgeItemSelect}
+            userProfile={userProfile}
+            onLogout={handleLogout}
+          />
+        );
       case 'file-management':
         return (
           <FileManagementPage
@@ -178,15 +188,25 @@ function App() {
               setCurrentPage('knowledge-center');
               setSelectedKnowledgeItem(null);
             }}
+            userProfile={userProfile}
+            onLogout={handleLogout}
           />
         );
       case 'search':
-        return <SearchPage onSearch={handleSearch} />;
+        return (
+          <SearchPage 
+            onSearch={handleSearch}
+            userProfile={userProfile}
+            onLogout={handleLogout}
+          />
+        );
       case 'search-results':
         return (
           <SearchResultsPage
             query={searchQuery}
             onBack={() => setCurrentPage('search')}
+            userProfile={userProfile}
+            onLogout={handleLogout}
           />
         );
       default:
@@ -301,6 +321,21 @@ function App() {
               <div className="ml-4 mt-2 space-y-1">
                 <button
                   onClick={() => {
+                    setCurrentKnowledgeSection('knowledge-center');
+                    setCurrentPage('knowledge-center');
+                  }}
+                  className={`w-full p-2 rounded-lg flex items-center space-x-2 text-sm ${
+                    currentKnowledgeSection === 'knowledge-center'
+                      ? 'bg-gray-700 text-white'
+                      : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                  }`}
+                >
+                  <Book size={18} />
+                  <span>知识中心</span>
+                </button>
+
+                <button
+                  onClick={() => {
                     setCurrentKnowledgeSection('documents');
                     setCurrentPage('knowledge');
                   }}
@@ -341,20 +376,7 @@ function App() {
                   <Download size={18} />
                   <span>资源下载</span>
                 </button>
-                <button
-                  onClick={() => {
-                    setCurrentKnowledgeSection('knowledge-center');
-                    setCurrentPage('knowledge-center');
-                  }}
-                  className={`w-full p-2 rounded-lg flex items-center space-x-2 text-sm ${
-                    currentKnowledgeSection === 'knowledge-center'
-                      ? 'bg-gray-700 text-white'
-                      : 'text-gray-400 hover:text-white hover:bg-gray-800'
-                  }`}
-                >
-                  <Book size={18} />
-                  <span>知识中心</span>
-                </button>
+                
               </div>
             )}
           </div>
